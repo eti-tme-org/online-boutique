@@ -40,6 +40,10 @@ jobs:
       - name: Run Trivy vulnerability scanner
         run: |
           trivy filesystem ./ --detection-priority precise --severity CRITICAL --ignore-unfixed --format sarif --output trivy-results.sarif
+
+      - name: Install jq
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
           
       - name: A/B Check
         env:
