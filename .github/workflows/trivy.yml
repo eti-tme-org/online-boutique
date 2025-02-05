@@ -40,6 +40,13 @@ jobs:
       - name: Run Trivy vulnerability scanner
         run: |
           trivy filesystem ./ --detection-priority precise --severity CRITICAL --ignore-unfixed --format sarif --output trivy-results.sarif
+          export RESULT_COUNT=$(jq '.runs[0].results | length ' trivy-results.sarif)
+          
+      - name: A/B Check
+        if: ${{ RESULT_COUNT }} != "0"
+        run: |
+          echo "::error $(jq -r '.runs[0].results' trivy-results.sarif)"
+          exit 1
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
